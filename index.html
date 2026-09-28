@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JanSathi – Smart Digital Assistant | जनसाथी डिजिटल सहाय्यक</title>
+  <meta name="description" content="JanSathi is a smart digital assistant for village citizens, students, farmers, and women to explore government schemes, check eligibility, and track grievances." />
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700;800&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- TOP HEADER & ANNOUNCEMENTS -->
+  <div class="top-bar">
+    <div class="top-bar-info">
+      <span>🇮🇳 Government Scheme Portal & Citizen Redressal</span>
+      <span id="announcementsMarquee">📌 New Scheme Launch: Majhi Ladki Bahin Yojana 2026 applications now active!</span>
+    </div>
+    <div style="display:flex; align-items:center; gap:6px;">
+      <span style="font-size:0.8rem; font-weight:600; color:white;">🌐 Language:</span>
+      <select id="langSelect" onchange="setSystemLanguage(this.value)" style="padding:4px 8px; border-radius:12px; border:none; font-weight:700; font-size:0.8rem; background:white; color:#1e3a8a; cursor:pointer;">
+        <option value="en">English</option>
+        <option value="mr" selected>मराठी</option>
+        <option value="hi">हिन्दी</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- NAVIGATION HEADER -->
+  <nav class="navbar">
+    <a href="#" class="nav-brand" onclick="switchTab('schemesTab')">
+      <div class="logo-badge">जनसाथी</div>
+      <div class="brand-text">
+        <h1 data-i18n="heroTitle">JanSathi Assistant</h1>
+        <p>Smart Citizen Digital Platform</p>
+      </div>
+    </a>
+
+    <ul class="nav-menu">
+      <li><a class="nav-link active" onclick="switchTab('schemesTab')" data-i18n="schemesHeader">Schemes</a></li>
+      <li><a class="nav-link" onclick="switchTab('eligibilityTab')" data-i18n="checkEligibilityBtn">Eligibility Calculator</a></li>
+      <li><a class="nav-link" onclick="switchTab('grievanceTab')" data-i18n="grievanceTitle">Grievances</a></li>
+      <li><a class="nav-link" onclick="switchTab('announcementsTab')" data-i18n="announcementsTitle">Announcements</a></li>
+      <li><a class="nav-link" onclick="switchTab('resourcesTab')" data-i18n="resourcesTitle">Resources</a></li>
+      <li><a class="nav-link" onclick="switchTab('interopTab')">Interoperability Hub</a></li>
+      <li><a class="nav-link" onclick="switchTab('adminTab')">Admin Dashboard</a></li>
+    </ul>
+
+    <div>
+      <button class="btn-primary" id="navLoginBtn" onclick="openAuthModal()" data-i18n="loginBtn">Login / Register</button>
+    </div>
+  </nav>
+
+  <!-- HERO BANNER -->
+  <section class="hero-section">
+    <div class="hero-content">
+      <div class="hero-pill" data-i18n="heroPill">🚩 Designed for Citizens Across India & Maharashtra</div>
+      <h1 class="hero-title" data-i18n="heroTitle">JanSathi Digital Assistant</h1>
+      <p class="hero-subtitle" data-i18n="heroSubtitle">One-stop portal for village citizens, students, farmers, and women to explore government schemes, check eligibility, and submit grievances.</p>
+      
+      <div class="hero-actions">
+        <button class="btn-primary" onclick="switchTab('schemesTab')" data-i18n="exploreBtn">Explore Schemes 🔍</button>
+        <button class="btn-secondary" onclick="switchTab('eligibilityTab')" data-i18n="checkEligibilityBtn">Check Eligibility ✨</button>
+      </div>
+
+      <div class="hero-stats">
+        <div class="stat-card">
+          <div class="stat-number">50+</div>
+          <div class="stat-label">Active Govt Schemes</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">100%</div>
+          <div class="stat-label">Transparent Redressal</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">24/7</div>
+          <div class="stat-label">JanSahayak AI Support</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MAIN CONTAINER WITH ALL TABS -->
+  <main class="main-content">
+
+    <!-- SCHEMES EXPLORER TAB -->
+    <div id="schemesTab" class="tab-content active">
+      <div class="search-filter-card">
+        <div class="search-bar-row">
+          <div class="search-input-wrapper">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="searchInput" class="search-input" placeholder="Search scheme name, keyword or sector..." data-i18n="searchPlaceholder">
+          </div>
+        </div>
+
+        <div class="filters-grid">
+          <select id="categoryFilter" class="filter-select">
+            <option value="all" data-i18n="allCategories">All Categories</option>
+            <option value="farmers">Farmers & Agriculture (शेती व शेतकरी)</option>
+            <option value="women">Women & Child (महिला व बालविकास)</option>
+            <option value="students">Students & Education (शिक्षण व युवक)</option>
+            <option value="health">Healthcare (आरोग्य व विमा)</option>
+            <option value="housing">Housing (गृहनिर्माण)</option>
+            <option value="employment">Employment (रोजगार)</option>
+          </select>
+
+          <select id="govtLevelFilter" class="filter-select">
+            <option value="all" data-i18n="allLevels">All Govt Levels</option>
+            <option value="central">Central Govt (केंद्र सरकार)</option>
+            <option value="state">State Govt (राज्य सरकार)</option>
+          </select>
+
+          <select id="stateFilter" class="filter-select">
+            <option value="all" data-i18n="allStates">All States / All India</option>
+            <option value="maharashtra">Maharashtra (महाराष्ट्र)</option>
+            <option value="all india">All India (सर्व भारत)</option>
+          </select>
+
+          <label style="display:flex; align-items:center; gap:8px; font-weight:600; cursor:pointer;">
+            <input type="checkbox" id="savedFilter" onchange="filterSchemes()"> ❤️ Saved Schemes (<span id="savedBadgeCount">0</span>)
+          </label>
+        </div>
+      </div>
+
+      <div class="schemes-header">
+        <div class="schemes-title">
+          <h2 data-i18n="schemesHeader">Available Government Schemes</h2>
+        </div>
+        <span class="scheme-count-badge" id="schemeCount">Loading schemes...</span>
+      </div>
+
+      <div class="schemes-grid" id="schemesContainer">
+        <!-- Dynamic Scheme Cards Grid -->
+      </div>
+    </div>
+
+    <!-- ELIGIBILITY CALCULATOR TAB -->
+    <div id="eligibilityTab" class="tab-content">
+      <div class="form-card">
+        <div class="form-header">
+          <h2 data-i18n="eligibilityTitle">Scheme Eligibility Calculator</h2>
+          <p style="color:#64748B;">Enter your profile details to calculate personalized scheme eligibility matches.</p>
+        </div>
+
+        <form id="eligibilityForm">
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Age (वर्षे)</label>
+              <input type="number" id="eligAge" class="form-control" value="25" min="1" max="100" required>
+            </div>
+            <div class="form-group">
+              <label>Annual Family Income (₹)</label>
+              <input type="number" id="eligIncome" class="form-control" value="150000" step="10000" required>
+            </div>
+            <div class="form-group">
+              <label>Gender (लिंग)</label>
+              <select id="eligGender" class="form-control">
+                <option value="all">All / Prefer not to say</option>
+                <option value="female">Female (महिला)</option>
+                <option value="male">Male (पुरुष)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Category (वर्ग)</label>
+              <select id="eligCategory" class="form-control">
+                <option value="general">General / Open</option>
+                <option value="obc">OBC</option>
+                <option value="sc">SC / ST</option>
+                <option value="ews">EWS</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Occupation / Role</label>
+              <select id="eligRole" class="form-control">
+                <option value="citizen">Citizen / General</option>
+                <option value="farmer">Farmer (शेतकरी)</option>
+                <option value="student">Student (विद्यार्थी)</option>
+                <option value="women">Woman Entrepreneur (महिला)</option>
+              </select>
+            </div>
+          </div>
+          <button type="submit" class="btn-primary" style="width:100%; justify-content:center; padding:12px;">Calculate Matching Schemes ✨</button>
+        </form>
+
+        <div id="eligibilityResults" style="margin-top:24px; display:none;"></div>
+      </div>
+    </div>
+
+    <!-- GRIEVANCES TAB -->
+    <div id="grievanceTab" class="tab-content">
+      <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap:24px;">
+        
+        <!-- Submit Form -->
+        <div class="form-card" style="margin:0;">
+          <div class="form-header">
+            <h2 data-i18n="grievanceTitle">Submit New Grievance</h2>
+            <p style="color:#64748B;">Report public issues or scheme delivery bottlenecks directly to regional authorities.</p>
+          </div>
+          <form id="grievanceForm">
+            <div class="form-group" style="margin-bottom:12px;">
+              <label>Issue Subject (तक्रार विषय)</label>
+              <input type="text" id="grvTitle" class="form-control" placeholder="e.g. Delay in scholarship disbursement" required>
+            </div>
+            <div class="form-group" style="margin-bottom:12px;">
+              <label>Department (विभाग)</label>
+              <select id="grvCategory" class="form-control">
+                <option value="Schemes">Scheme Disbursement Issue</option>
+                <option value="Revenue">Gram Panchayat / Revenue</option>
+                <option value="Public Works">Roads & Water Supply</option>
+                <option value="Health">Hospital & Health Services</option>
+              </select>
+            </div>
+            <div class="form-group" style="margin-bottom:16px;">
+              <label>Detailed Complaint Description (सविस्तर माहिती)</label>
+              <textarea id="grvDesc" class="form-control" rows="4" placeholder="Provide details, village name, and affected scheme..." required></textarea>
+            </div>
+            <button type="submit" class="btn-primary" style="width:100%; justify-content:center;">Submit Complaint 📤</button>
+          </form>
+          <div id="grievanceSubmitStatus" style="display:none;"></div>
+        </div>
+
+        <!-- Track Status -->
+        <div class="form-card" style="margin:0;">
+          <div class="form-header">
+            <h2 data-i18n="trackGrievanceTitle">Track Grievance Status</h2>
+            <p style="color:#64748B;">Check live action status using your reference tracking code.</p>
+          </div>
+          <form id="trackGrievanceForm">
+            <div class="form-group" style="margin-bottom:14px;">
+              <label>Tracking Reference ID</label>
+              <input type="text" id="trackIdInput" class="form-control" placeholder="e.g. GRV-2026-1042" required>
+            </div>
+            <button type="submit" class="btn-secondary" style="width:100%; justify-content:center;">Search Tracking Status 🔍</button>
+          </form>
+          <div id="trackResult" style="display:none;"></div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ANNOUNCEMENTS TAB -->
+    <div id="announcementsTab" class="tab-content">
+      <div class="form-card" style="max-width:1000px;">
+        <div class="form-header">
+          <h2 data-i18n="announcementsTitle">Government Resolutions & Announcements</h2>
+          <p style="color:#64748B;">Official government notices, scheme updates, and policy documents.</p>
+        </div>
+        <div style="display:grid; gap:16px;">
+          <div style="background:#FFF; border:1px solid #E2E8F0; padding:18px; border-radius:12px;">
+            <span class="badge badge-central">Central Resolution</span>
+            <h3 style="color:#06101E; margin-top:6px;">PM-KISAN 17th Installment Release Notification</h3>
+            <p style="color:#64748B; font-size:0.9rem; margin:6px 0;">All registered farmers are advised to complete Aadhaar e-KYC before 30th October 2026 to ensure uninterrupted credit.</p>
+            <a href="#" class="btn-secondary" style="font-size:0.8rem; padding:4px 12px;">Download Official Notice PDF 📄</a>
+          </div>
+          <div style="background:#FFF; border:1px solid #E2E8F0; padding:18px; border-radius:12px;">
+            <span class="badge badge-state">Maharashtra State GR</span>
+            <h3 style="color:#06101E; margin-top:6px;">Majhi Ladki Bahin Yojana Phase-3 Portal Registration Opened</h3>
+            <p style="color:#64748B; font-size:0.9rem; margin:6px 0;">Women aged 21 to 65 can submit fresh applications at local Gram Panchayat or Setu Seva Kendra.</p>
+            <a href="#" class="btn-secondary" style="font-size:0.8rem; padding:4px 12px;">Download GR Document PDF 📄</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CITIZEN RESOURCES TAB -->
+    <div id="resourcesTab" class="tab-content">
+      <div class="form-card" style="max-width:1000px;">
+        <div class="form-header">
+          <h2 data-i18n="resourcesTitle">Citizen Guidance & Form Downloads</h2>
+          <p style="color:#64748B;">Essential application guides, document checklists, and helpline numbers.</p>
+        </div>
+        <div class="resource-grid">
+          <div class="resource-card">
+            <h3>📑 Document Checklists</h3>
+            <p style="font-size:0.88rem; color:#64748B; margin-bottom:12px;">Step-by-step guides on how to obtain 7/12 Land Extracts, Domicile Certificates, and Income Certificates.</p>
+            <button class="btn-secondary" style="width:100%;">View Guidance Guide 📖</button>
+          </div>
+          <div class="resource-card">
+            <h3>📥 Application Forms</h3>
+            <p style="font-size:0.88rem; color:#64748B; margin-bottom:12px;">Download offline application forms for Post-Matric Scholarships and Kisan Credit Card.</p>
+            <button class="btn-secondary" style="width:100%;">Download Forms PDF 📄</button>
+          </div>
+          <div class="resource-card">
+            <h3>📞 Government Helplines</h3>
+            <p style="font-size:0.88rem; color:#64748B; margin-bottom:12px;">Toll-free helpline numbers: PM-Kisan (155261), State DBT Direct Line (022-49150800), Emergency (112).</p>
+            <button class="btn-secondary" style="width:100%;">View Directory ☎️</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ADMIN DASHBOARD TAB -->
+    <div id="adminTab" class="tab-content">
+      <div class="form-card" style="max-width:1000px;">
+        <div class="form-header">
+          <h2>System Administration Dashboard</h2>
+          <p style="color:#64748B;">Live portal metrics and scheme management controls.</p>
+        </div>
+
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:16px; margin-bottom:24px;">
+          <div style="background:#F0FDF4; border:1px solid #BBF7D0; padding:16px; border-radius:12px; text-align:center;">
+            <div style="font-size:1.8rem; font-weight:800; color:#166534;">1,420</div>
+            <div style="font-size:0.8rem; color:#15803D;">Registered Citizens</div>
+          </div>
+          <div style="background:#EFF6FF; border:1px solid #BFDBFE; padding:16px; border-radius:12px; text-align:center;">
+            <div style="font-size:1.8rem; font-weight:800; color:#1E40AF;">54</div>
+            <div style="font-size:0.8rem; color:#1D4ED8;">Active Schemes</div>
+          </div>
+          <div style="background:#FEF3C7; border:1px solid #FDE68A; padding:16px; border-radius:12px; text-align:center;">
+            <div style="font-size:1.8rem; font-weight:800; color:#92400E;">312</div>
+            <div style="font-size:0.8rem; color:#B45309;">Resolved Grievances</div>
+          </div>
+        </div>
+
+        <h3 style="margin-bottom:14px; color:#06101E;">Add New Scheme</h3>
+        <form id="addSchemeForm">
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Scheme Title</label>
+              <input type="text" id="newSchTitle" class="form-control" placeholder="e.g. Chief Minister Youth Training" required>
+            </div>
+            <div class="form-group">
+              <label>Category</label>
+              <select id="newSchCategory" class="form-control">
+                <option value="farmers">Farmers</option>
+                <option value="students">Students</option>
+                <option value="women">Women</option>
+                <option value="health">Healthcare</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Government Level</label>
+              <select id="newSchGovtLevel" class="form-control">
+                <option value="Central">Central Govt</option>
+                <option value="State">State Govt</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group" style="margin-bottom:16px;">
+            <label>Description</label>
+            <textarea id="newSchDesc" class="form-control" rows="3" placeholder="Scheme details and benefits..." required></textarea>
+          </div>
+          <button type="submit" class="btn-primary" style="padding:10px 20px;">Publish Scheme 🚀</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- INTEROPERABILITY HUB TAB -->
+    <div id="interopTab" class="tab-content">
+      <div class="interop-container" style="display:flex; flex-direction:column; gap:24px;">
+        
+        <!-- HEADER CARD -->
+        <div style="background: linear-gradient(135deg, #1E3A8A 0%, #3B82F6 100%); color:white; padding:24px; border-radius:16px; box-shadow: 0 10px 25px -5px rgba(59,130,246,0.3);">
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;">
+            <div>
+              <h2 style="font-size:1.6rem; font-weight:800; margin-bottom:6px;">🔄 JanSathi Interoperability & System Integration Hub</h2>
+              <p style="opacity:0.9; font-size:0.95rem;">Cross-Departmental Data Exchange, Unified Citizen Profile, Consent Engine & Live Monitoring</p>
+            </div>
+            <div style="background:rgba(255,255,255,0.15); padding:10px 18px; border-radius:30px; font-weight:600; font-size:0.85rem; backdrop-filter:blur(5px); border:1px solid rgba(255,255,255,0.3);">
+              🟢 API Integration Layer: <span id="layerStatusBadge">ACTIVE (8080)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- TWO COLUMN LAYOUT: PROFILE & CONSENT -->
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap:24px;">
+          
+          <!-- UNIFIED CITIZEN PROFILE CARD -->
+          <div style="background:white; padding:24px; border-radius:16px; border:1px solid #E2E8F0; box-shadow:0 4px 6px -1px rgba(0,0,0,0.05);">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+              <h3 style="font-size:1.15rem; font-weight:700; color:#0F172A;">👤 Unified Citizen Profile</h3>
+              <span class="badge" style="background:#DBEAFE; color:#1E40AF; padding:4px 10px; border-radius:12px; font-weight:600; font-size:0.75rem;">SSO Authenticated</span>
+            </div>
+            <div id="unifiedProfileContainer" style="display:flex; flex-direction:column; gap:12px;">
+              <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; font-size:0.88rem;">
+                <div><strong>Citizen ID:</strong> <span id="profCitizenId">CIT-88902</span></div>
+                <div><strong>Name:</strong> <span id="profName">Ramesh Kisanrao Patil</span></div>
+                <div><strong>Age:</strong> <span id="profAge">42</span></div>
+                <div><strong>Education:</strong> <span id="profEducation">Higher Secondary</span></div>
+                <div><strong>Category/Caste:</strong> <span id="profCategory">OBC</span></div>
+                <div><strong>Occupation:</strong> <span id="profOccupation">Farmer</span></div>
+                <div><strong>District/State:</strong> <span id="profLocation">Pune, Maharashtra</span></div>
+                <div><strong>Mobile:</strong> <span id="profMobile">+91 9823012345</span></div>
+                <div style="grid-column: span 2;"><strong>Email:</strong> <span id="profEmail">citizen@jansathi.gov.in</span></div>
+              </div>
+              <button onclick="loadUnifiedProfile()" class="btn-secondary" style="margin-top:8px; padding:8px 14px; font-size:0.85rem; width:fit-content;">🔄 Sync Profile Data</button>
+            </div>
+          </div>
+
+          <!-- CONSENT MANAGEMENT CARD -->
+          <div style="background:white; padding:24px; border-radius:16px; border:1px solid #E2E8F0; box-shadow:0 4px 6px -1px rgba(0,0,0,0.05);">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+              <h3 style="font-size:1.15rem; font-weight:700; color:#0F172A;">🔐 Consent Management Module</h3>
+              <span style="font-size:0.75rem; color:#64748B;">Data Access Control</span>
+            </div>
+            <p style="font-size:0.85rem; color:#475569; margin-bottom:14px;">Manage cross-departmental data sharing permissions. Mock connectors check consent before exchanging personal info.</p>
+            <div id="consentListTable" style="display:flex; flex-direction:column; gap:8px;">
+              <!-- Consent items injected dynamically -->
+              <div style="padding:10px; border:1px solid #E2E8F0; border-radius:8px; display:flex; justify-content:space-between; align-items:center;">
+                <div>
+                  <div style="font-weight:600; font-size:0.88rem;">Agriculture Dept</div>
+                  <div style="font-size:0.75rem; color:#64748B;">7/12 Land & Crop Details</div>
+                </div>
+                <button class="btn-primary" style="padding:4px 12px; font-size:0.75rem;">Give Consent</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- DEPARTMENT CONNECTORS & MOCK API INTERACTION -->
+        <div style="background:white; padding:24px; border-radius:16px; border:1px solid #E2E8F0; box-shadow:0 4px 6px -1px rgba(0,0,0,0.05);">
+          <h3 style="font-size:1.15rem; font-weight:700; color:#0F172A; margin-bottom:16px;">🏢 Integrated Department Connectors & Mock API Execution</h3>
+          
+          <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:16px; margin-bottom:20px;">
+            <!-- Education Connector -->
+            <div style="border:1px solid #CBD5E1; padding:16px; border-radius:12px; background:#F8FAFC;">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                <span style="font-size:1.2rem;">🎓</span>
+                <span class="badge" style="background:#DCFCE7; color:#15803D; font-size:0.7rem; font-weight:700;">CONNECTED</span>
+              </div>
+              <h4 style="font-size:0.95rem; font-weight:700; color:#1E293B;">Education Dept</h4>
+              <p style="font-size:0.75rem; color:#64748B; margin:6px 0 12px 0;">Scholarship & Qualification Verification</p>
+              <button onclick="testDepartmentConnector('Education')" class="btn-secondary" style="width:100%; padding:6px 10px; font-size:0.8rem;">Run Connector 🚀</button>
+            </div>
+
+            <!-- Agriculture Connector -->
+            <div style="border:1px solid #CBD5E1; padding:16px; border-radius:12px; background:#F8FAFC;">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                <span style="font-size:1.2rem;">🌾</span>
+                <span class="badge" style="background:#DCFCE7; color:#15803D; font-size:0.7rem; font-weight:700;">CONNECTED</span>
+              </div>
+              <h4 style="font-size:0.95rem; font-weight:700; color:#1E293B;">Agriculture Dept</h4>
+              <p style="font-size:0.75rem; color:#64748B; margin:6px 0 12px 0;">Farmer Registry & Subsidies</p>
+              <button onclick="testDepartmentConnector('Agriculture')" class="btn-secondary" style="width:100%; padding:6px 10px; font-size:0.8rem;">Run Connector 🚀</button>
+            </div>
+
+            <!-- Healthcare Connector -->
+            <div style="border:1px solid #CBD5E1; padding:16px; border-radius:12px; background:#F8FAFC;">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                <span style="font-size:1.2rem;">🏥</span>
+                <span class="badge" style="background:#DCFCE7; color:#15803D; font-size:0.7rem; font-weight:700;">CONNECTED</span>
+              </div>
+              <h4 style="font-size:0.95rem; font-weight:700; color:#1E293B;">Healthcare Dept</h4>
+              <p style="font-size:0.75rem; color:#64748B; margin:6px 0 12px 0;">Ayushman Bharat & Insurance</p>
+              <button onclick="testDepartmentConnector('Healthcare')" class="btn-secondary" style="width:100%; padding:6px 10px; font-size:0.8rem;">Run Connector 🚀</button>
+            </div>
+
+            <!-- Transport Connector -->
+            <div style="border:1px solid #CBD5E1; padding:16px; border-radius:12px; background:#F8FAFC;">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                <span style="font-size:1.2rem;">🚌</span>
+                <span class="badge" style="background:#DCFCE7; color:#15803D; font-size:0.7rem; font-weight:700;">CONNECTED</span>
+              </div>
+              <h4 style="font-size:0.95rem; font-weight:700; color:#1E293B;">Transport Dept</h4>
+              <p style="font-size:0.75rem; color:#64748B; margin:6px 0 12px 0;">DL / RC & Concession Passes</p>
+              <button onclick="testDepartmentConnector('Transport')" class="btn-secondary" style="width:100%; padding:6px 10px; font-size:0.8rem;">Run Connector 🚀</button>
+            </div>
+          </div>
+
+          <!-- MOCK API CONNECTOR OUTPUT CONSOLE -->
+          <div style="background:#0F172A; color:#38BDF8; padding:16px; border-radius:10px; font-family:monospace; font-size:0.82rem; min-height:100px; max-height:220px; overflow-y:auto;" id="connectorConsoleLog">
+            > [JanSathi API Layer] Ready. Click 'Run Connector' above to test inter-department data exchange.
+          </div>
+        </div>
+
+        <!-- UNIFIED APPLICATION TRACKING & WORKFLOW ENGINE -->
+        <div style="background:white; padding:24px; border-radius:16px; border:1px solid #E2E8F0; box-shadow:0 4px 6px -1px rgba(0,0,0,0.05);">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:12px;">
+            <h3 style="font-size:1.15rem; font-weight:700; color:#0F172A;">📋 Unified Application Tracking & Workflow Engine</h3>
+            <button onclick="refreshApplicationsList()" class="btn-secondary" style="padding:6px 12px; font-size:0.8rem;">🔄 Refresh Tracked Applications</button>
+          </div>
+
+          <div style="overflow-x:auto;">
+            <table style="width:100%; border-collapse:collapse; text-align:left; font-size:0.88rem;">
+              <thead>
+                <tr style="background:#F1F5F9; border-bottom:2px solid #CBD5E1;">
+                  <th style="padding:10px 12px;">App ID</th>
+                  <th style="padding:10px 12px;">Department</th>
+                  <th style="padding:10px 12px;">Service / Scheme</th>
+                  <th style="padding:10px 12px;">Submitted Date</th>
+                  <th style="padding:10px 12px;">Status</th>
+                  <th style="padding:10px 12px;">Action / Workflow</th>
+                </tr>
+              </thead>
+              <tbody id="unifiedAppsTableBody">
+                <!-- Applications rows loaded dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- TWO COLUMN: AUDIT LOGS & INTEGRATION MONITORING -->
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap:24px;">
+          
+          <!-- AUDIT LOGGING MODULE -->
+          <div style="background:white; padding:24px; border-radius:16px; border:1px solid #E2E8F0; box-shadow:0 4px 6px -1px rgba(0,0,0,0.05);">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+              <h3 style="font-size:1.15rem; font-weight:700; color:#0F172A;">📜 Audit Logs (Security & Interop)</h3>
+              <button onclick="fetchAuditLogs()" class="btn-secondary" style="padding:4px 10px; font-size:0.75rem;">Reload Logs</button>
+            </div>
+            <div style="max-height:240px; overflow-y:auto; border:1px solid #E2E8F0; border-radius:8px;">
+              <table style="width:100%; border-collapse:collapse; font-size:0.78rem; text-align:left;">
+                <thead style="background:#F8FAFC; position:sticky; top:0;">
+                  <tr>
+                    <th style="padding:8px;">Action</th>
+                    <th style="padding:8px;">User / Role</th>
+                    <th style="padding:8px;">Dept</th>
+                    <th style="padding:8px;">Time</th>
+                  </tr>
+                </thead>
+                <tbody id="auditLogTableBody">
+                  <!-- Audit logs loaded dynamically -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- INTEGRATION MONITORING MODULE -->
+          <div style="background:white; padding:24px; border-radius:16px; border:1px solid #E2E8F0; box-shadow:0 4px 6px -1px rgba(0,0,0,0.05);">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+              <h3 style="font-size:1.15rem; font-weight:700; color:#0F172A;">📊 Integration Monitoring</h3>
+              <span class="badge" style="background:#DCFCE7; color:#15803D; padding:4px 10px; border-radius:12px; font-weight:700; font-size:0.75rem;">ALL SYSTEMS NORMAL</span>
+            </div>
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:16px;">
+              <div style="background:#EFF6FF; border:1px solid #BFDBFE; padding:12px; border-radius:10px; text-align:center;">
+                <div style="font-size:1.4rem; font-weight:800; color:#1E40AF;" id="monSuccessReqs">1,250</div>
+                <div style="font-size:0.75rem; color:#1D4ED8;">Successful Requests</div>
+              </div>
+              <div style="background:#FEF2F2; border:1px solid #FCA5A5; padding:12px; border-radius:10px; text-align:center;">
+                <div style="font-size:1.4rem; font-weight:800; color:#991B1B;" id="monFailedReqs">18</div>
+                <div style="font-size:0.75rem; color:#B91C1C;">Failed / Retried</div>
+              </div>
+              <div style="background:#FEF3C7; border:1px solid #FDE68A; padding:12px; border-radius:10px; text-align:center;">
+                <div style="font-size:1.4rem; font-weight:800; color:#92400E;" id="monPendingReqs">7</div>
+                <div style="font-size:0.75rem; color:#B45309;">Pending / In-Flight</div>
+              </div>
+              <div style="background:#F3E8FF; border:1px solid #D8B4FE; padding:12px; border-radius:10px; text-align:center;">
+                <div style="font-size:1.4rem; font-weight:800; color:#6B21A8;" id="monAvgLatency">420 ms</div>
+                <div style="font-size:0.75rem; color:#7E22CE;">Average Latency</div>
+              </div>
+            </div>
+
+            <button onclick="fetchMonitoringMetrics()" class="btn-primary" style="width:100%; justify-content:center; padding:8px; font-size:0.85rem;">🔄 Refresh Health & Performance Metrics</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </main>
+
+  <!-- SCHEME DETAIL MODAL OVERLAY -->
+  <div class="modal-overlay" id="schemeDetailModalOverlay">
+    <div class="modal-container">
+      <button style="position:absolute; top:16px; right:16px; border:none; background:none; font-size:1.4rem; cursor:pointer;" onclick="closeSchemeDetailModal()">✕</button>
+      <div id="schemeDetailModalBody"></div>
+    </div>
+  </div>
+
+  <!-- JANSAHAYAK AI CHATBOT FAB & DRAWER -->
+  <button class="chatbot-fab" onclick="toggleChatbot()" title="Open JanSahayak Assistant">💬</button>
+
+  <div class="chatbot-drawer" id="chatbotDrawer">
+    <div class="chatbot-header">
+      <h3 data-i18n="chatBotTitle">JanSahayak AI Assistant</h3>
+      <button class="close-btn" onclick="toggleChatbot()">✕</button>
+    </div>
+    
+    <div class="quick-prompts">
+      <span class="prompt-chip" onclick="sendQuickPrompt('पीएम-किसान माहिती')">🌾 पीएम-किसान</span>
+      <span class="prompt-chip" onclick="sendQuickPrompt('लाडकी बहीण पात्रता')">👩 लाडकी बहीण</span>
+      <span class="prompt-chip" onclick="sendQuickPrompt('तक्रार कशी करावी?')">📝 तक्रार नोंदणी</span>
+      <span class="prompt-chip" onclick="sendQuickPrompt('शिष्यवृत्ती योजना')">🎓 शिष्यवृत्ती</span>
+    </div>
+
+    <div class="chatbot-body" id="chatBody">
+      <div class="chat-msg bot">
+        नमस्कार! 🚩 मी जनसहाय्यक डिजिटल मित्रा आहे. शासकीय योजना, पात्रता किंवा तक्रारीबाबत कोणताही प्रश्न विचारा!
+      </div>
+    </div>
+
+    <div class="chatbot-footer" style="display:flex; align-items:center; gap:6px;">
+      <button type="button" id="voiceMicBtn" onclick="toggleVoiceInputStatic()" title="Voice Search / बोलून प्रश्न विचारा" style="padding:8px 12px; border-radius:20px; border:1px solid #cbd5e1; background:#f1f5f9; cursor:pointer; font-size:1.1rem;">🎙️</button>
+      <input type="text" id="chatInput" class="chat-input" placeholder="Ask your query here..." data-i18n="chatPlaceholder" onkeydown="if(event.key === 'Enter') sendChatMessage()">
+      <button class="btn-primary" onclick="sendChatMessage()" style="padding:8px 16px; border-radius:20px;">Send</button>
+    </div>
+  </div>
+
+  <!-- AUTHENTICATION MODAL -->
+  <div class="modal-overlay" id="authModalOverlay">
+    <div class="modal-container">
+      <button style="position:absolute; top:16px; right:16px; border:none; background:none; font-size:1.4rem; cursor:pointer;" onclick="closeAuthModal()">✕</button>
+      <div class="form-header" style="margin-bottom:16px;">
+        <h2 data-i18n="loginBtn">Citizen Portal Login</h2>
+        <p style="color:#64748B; font-size:0.88rem;">Sign in to access personalized scheme bookmarks and grievance records.</p>
+      </div>
+      <form id="loginForm">
+        <div class="form-group" style="margin-bottom:12px;">
+          <label>Email Address</label>
+          <input type="email" id="loginEmail" class="form-control" value="citizen@jansathi.gov.in" required>
+        </div>
+        <div class="form-group" style="margin-bottom:18px;">
+          <label>Password</label>
+          <input type="password" id="loginPass" class="form-control" value="password123" required>
+        </div>
+        <button type="submit" class="btn-primary" style="width:100%; justify-content:center; padding:10px;">Sign In 🔑</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <p><strong>JanSathi Smart Digital Assistant (जनसाथी डिजिटल सहाय्यक)</strong> &copy; 2026</p>
+    <p style="font-size:0.8rem; margin-top:6px; color:#64748B;">Built with HTML5, Vanilla CSS3, Java HttpServer REST Backend & PHP MySQL Data API.</p>
+  </footer>
+
+  <script src="js/app.js"></script>
+</body>
+</html>
